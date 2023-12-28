@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:prova_target_sistemas/stores/information_capture_store.dart';
+import 'package:prova_target_sistemas/domain/stores/information_capture_store.dart';
 import 'package:prova_target_sistemas/widgets/bottom_label.dart';
 import 'package:prova_target_sistemas/widgets/scaffold_background.dart';
 
@@ -20,7 +20,6 @@ class _InformationCaptureScreenState extends State<InformationCaptureScreen> {
   @override
   void initState() {
     super.initState();
-
     _focusNode = FocusNode();
   }
 
@@ -30,20 +29,16 @@ class _InformationCaptureScreenState extends State<InformationCaptureScreen> {
       child: Padding(
         padding: const EdgeInsets.all(40),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: _mainCard(),
-              ),
-              const SizedBox(height: 50),
-              _textField(),
-              const SizedBox(height: 120),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: BottomLabel(),
-              )
-            ],
+          //FutureBuilder para aguardar os dados do shared preference antes de montar a tela
+          child: FutureBuilder<String>(
+            future: infoStore.getInfoList(),
+            builder: (context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return _mainScreen();
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
           ),
         ),
       ),
@@ -54,6 +49,24 @@ class _InformationCaptureScreenState extends State<InformationCaptureScreen> {
   void dispose() {
     _focusNode.dispose();
     super.dispose();
+  }
+
+  Widget _mainScreen() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: _mainCard(),
+        ),
+        const SizedBox(height: 50),
+        _textField(),
+        const SizedBox(height: 120),
+        const Align(
+          alignment: Alignment.bottomCenter,
+          child: BottomLabel(),
+        )
+      ],
+    );
   }
 
   Widget _mainCard() {
