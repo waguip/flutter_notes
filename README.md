@@ -1,4 +1,4 @@
-# prova_target_sistemas
+# App de Notas
 
 Um projeto em flutter que contém uma tela de autentificação e uma tela de captura de informações
 
